@@ -1,0 +1,51 @@
+pipeline {
+    agent any
+
+    environment {
+        GIT_REPO = 'git@github.com:chinabudhi123/nginx-deploy.git'
+        TARGET_HOST = '13.201.12.120'
+        TARGET_USER = 'ec2-user'
+        REMOTE_PATH = '/home/ec2-user/nginx-deploy'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: "${GIT_REPO}"
+            }
+        }
+
+        stage('Upload to GitHub') {
+            steps {
+                sh """
+                git config --global user.email "Satyajit@example.com"
+                git config --global user.name "Satyajit"
+                git add .
+                git commit -m "Update NGINX content" || echo 'No changes to commit'
+                git push origin main || echo 'Nothing to push'
+                """
+            }
+        }
+
+        stage('Deploy to Target Server') {
+            steps {
+                sshagent(['ec2-ssh-key']) {
+                    sh """
+                    ssh -o StrictHostKeyChecking=no ${TARGET_USER}@${TARGET_HOST} 'mkdir -p ${REMOTE_PATH}'
+                    scp -o StrictHostKeyChecking=no -r * ${TARGET_USER}@${TARGET_HOST}:${REMOTE_PATH}
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Deployment completed successfully.'
+        }
+        failure {
+            echo '❌ Deployment failed.'
+        }
+    }
+}
+
