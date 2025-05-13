@@ -18,6 +18,14 @@ pipeline {
             }
         }
 
+        stage('Approval Before Deployment') {
+            steps {
+                script {
+                    input message: 'Do you approve deployment to EC2?', ok: 'Yes, Deploy'
+                }
+            }
+        }
+
         stage('Deploy to EC2 Instance') {
             steps {
                 sshagent (credentials: [env.SSH_CREDENTIALS_ID]) {
