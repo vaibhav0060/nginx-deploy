@@ -2,37 +2,31 @@ pipeline {
     agent any
 
     environment {
-        GIT_REPO = 'git@github.com:chinabudhi123/nginx-deploy.git'
-        TARGET_HOST = '13.201.12.120'
-        TARGET_USER = 'ec2-user'
-        REMOTE_PATH = '/home/ec2-user/nginx-deploy'
+        TARGET_HOST = '15.207.51.224'
+        SSH_USER = 'ec2-user'
+        SSH_CREDENTIALS_ID = 'ec2-access'
+    }
+
+    triggers {
+        githubPush()
     }
 
     stages {
-        stage('Checkout') {
+        stage('Clone Repository') {
             steps {
-                git branch: 'main', url: "${GIT_REPO}"
+                git branch: 'main', url: 'https://github.com/chinabudhi123/nginx-deploy.git'
             }
         }
 
-        stage('Upload to GitHub') {
+        stage('Deploy to EC2 Instance') {
             steps {
-                sh """
-                git config --global user.email "Satyajit@example.com"
-                git config --global user.name "Satyajit"
-                git add .
-                git commit -m "Update NGINX content" || echo 'No changes to commit'
-                git push origin main || echo 'Nothing to push'
-                """
-            }
-        }
-
-        stage('Deploy to Target Server') {
-            steps {
-                sshagent(['ec2-ssh-key']) {
+                sshagent (credentials: [env.SSH_CREDENTIALS_ID]) {
                     sh """
-                    ssh -o StrictHostKeyChecking=no ${TARGET_USER}@${TARGET_HOST} 'mkdir -p ${REMOTE_PATH}'
-                    scp -o StrictHostKeyChecking=no -r * ${TARGET_USER}@${TARGET_HOST}:${REMOTE_PATH}
+                        echo "Copying files to EC2..."
+                        scp -o StrictHostKeyChecking=no -r * ${SSH_USER}@${TARGET_HOST}:/home/${SSH_USER}/app
+
+                        echo "Running deployment script on EC2..."
+                        ssh -o StrictHostKeyChecking=no ${SSH_USER}@${TARGET_HOST} 'bash /home/${SSH_USER}/app/app.sh'
                     """
                 }
             }
@@ -48,4 +42,3 @@ pipeline {
         }
     }
 }
-
