@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        TARGET_HOST = '15.152.32.150'
+        TARGET_HOST = '56.155.9.36'
         SSH_USER = 'ec2-user'
         SSH_CREDENTIALS_ID = 'ec2-access'
     }
