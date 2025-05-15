@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        TARGET_HOST = '15.206.124.214'
+        TARGET_HOST = '15.152.32.150'
         SSH_USER = 'ec2-user'
         SSH_CREDENTIALS_ID = 'ec2-access'
     }
@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/chinabudhi123/nginx-deploy.git'
+                git branch: 'main', url: 'https://github.com/vaibhav0060/nginx-deploy.git'
             }
         }
 
