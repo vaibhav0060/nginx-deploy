@@ -11,12 +11,12 @@ pipeline {
         githubPush()
     }
 
-    stages {
-        stage('Clone Repository') {
-            steps {
-                git branch: 'main', url: 'https://github.com/vaibhav0060/nginx-deploy.git'
-            }
-        }
+    // stages {
+    //     stage('Clone Repository') {
+    //         steps {
+    //             git branch: 'main', url: 'https://github.com/vaibhav0060/nginx-deploy.git'
+    //         }
+    //     }
 
         stage('Approval Before Deployment') {
             steps {
