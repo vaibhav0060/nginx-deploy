@@ -2,14 +2,12 @@ pipeline {
     agent any
 
     environment {
-        TARGET_HOST = '13.208.190.133'
+        TARGET_HOST = '13.208.183.51'
         SSH_USER = 'ec2-user'
         SSH_CREDENTIALS_ID = 'ec2-access'
     }
 
-    triggers {
-        githubPush()
-    }
+   
 
     stages {
         stage('Clone Repository') {
@@ -47,6 +45,4 @@ pipeline {
         }
         failure {
             echo '❌ Deployment failed.'
-        }
-    }
-}
+   
